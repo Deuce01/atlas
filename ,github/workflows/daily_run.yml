@@ -1,0 +1,31 @@
+name: Run Soccer Bot
+
+# Trigger: Runs every 6 hours (0, 6, 12, 18 UTC)
+# We limit to 6 hours to stay within the 100/day Free API limit
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows you to run it manually button click
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install requests firebase-admin scipy
+
+      - name: Run Prediction Script
+        env:
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          FIREBASE_KEY_JSON: ${{ secrets.FIREBASE_KEY_JSON }}
+        run: python main.py
